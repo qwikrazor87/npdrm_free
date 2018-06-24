@@ -1,0 +1,41 @@
+v7.0:
+	The old code has been scrapped and rewritten.
+	Patches are now dynamic and no longer has firmware specific hardcoded patches.
+	Should be compatible with all 6.XX CFW and Adrenaline CFW.
+	No longer creates a fake rif license or act.dat, all patches are done in RAM.
+	Suspend issue should be fixed, if not, try disabling all other plugins.
+	Ability to run official PSN games and encrypted DLC (EDAT/SPRX) without a valid license or act.dat.
+	Ability to view game software manuals in VSH requiring a license.
+	Ability to install PTF themes requiring a license. (new)
+	Ability to run PSN TG-16/PC Engine games without decrypting any content. (new)
+	Generates KEYS.BIN for PSN PS1 eboots on the fly if needed. (new)
+	In order for this plugin to run properly ALL content MUST be encrypted.
+	If you want to run decrypted content you must use the nodrm engine of PRO CFW.
+	This plugin first calls the official functions, and runs patched functions only if they fail.
+
+v6.2:
+	Creates ms0:/PSP/LICENSE folder if it's missing.
+
+v6.1:
+	Fixed the issue from v6 with launching ISO/CSO games from the XMB.
+
+v6:
+	Added a patch to allow boot mode 2 (BOOTABLE in PARAM.SFO) to run.
+
+v5.1:
+	Fixed some checks to prevent this plugin from running on non-PSN games (crashed on ISO/CSO games).
+
+v5:
+	Fixed issues with 6.20 compatibility.
+
+v4:
+	Added 6.20 compatibility and support for licensed DLC (no SPRX support yet).
+
+v3:
+	Added support for licensed game software manuals in the VSH.
+
+v2:
+	Added a patch to create a fake flash2:/act.dat for PSPs without one.
+
+v1:
+	Initial release.
