@@ -76,12 +76,7 @@ u32 FindExport(const char *module, const char *library, u32 nid)
 
 	if (mod) {
 		u32 addr = mod->text_addr;
-		u32 maxaddr = 0x88400000;
-
-		if (addr >= 0x08800000 && addr < 0x0A000000)
-			maxaddr = 0x0A000000;
-		else if (addr >= 0x08400000 && addr < 0x08800000)
-			maxaddr = 0x08800000;
+		u32 maxaddr = addr + mod->text_size;
 
 		for (; addr < maxaddr; addr += 4) {
 			if (strcmp(library, (const char *)addr) == 0) {
@@ -114,23 +109,18 @@ u32 FindImportByModule(const char *module, const char *lib, u32 nid)
 	SceModule2 *mod = FindModuleByName(module);
 
 	if (mod) {
-		u32 i, j, k;
+		int i;
+		SceLibStubTable *stub = (SceLibStubTable *)mod->stub_top;
 
-		for (i = mod->text_addr; i < (mod->text_addr + mod->text_size); i += 4) {
-			j = _lw(i);
-
-			if (((j & 3) == 0) && (j > mod->text_addr) && (j < (mod->text_addr + mod->text_size))) {
-				if (!strcmp((char *)j, lib)) {
-					SceLibStubTable *stub = (SceLibStubTable *)i;
-
-					if (stub->stubtable) {
-						for (k = 0; k < stub->stubcount; k++) {
-							if (stub->nidtable[k] == nid)
-								return (u32)&stub->stubtable[k * 2];
-						}
-					}
+		while (stub->libname) {
+			if (!strcmp(stub->libname, lib)) {
+				for (i = 0; i < stub->stubcount; i++) {
+					if (stub->nidtable[i] == nid)
+						return (u32)&stub->stubtable[i * 2];
 				}
 			}
+
+			stub = (SceLibStubTable *)((u32)stub + (stub->len << 2));
 		}
 	}
 

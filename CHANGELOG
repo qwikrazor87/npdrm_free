@@ -1,3 +1,6 @@
+v7.1:
+	Fixed the import scanning function that caused a crash on false positives.
+
 v7.0:
 	The old code has been scrapped and rewritten.
 	Patches are now dynamic and no longer has firmware specific hardcoded patches.

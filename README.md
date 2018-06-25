@@ -13,6 +13,8 @@ A PSP/ePSP plugin to run official NPDRM PS1/PSP content without need of a valid 
 ALL content MUST be encrypted and left as is from official .pkg for this plugin to work, otherwise use NoDRM engine in PRO CFW.
 
 ## Changelog
+### v7.1
+- Fixed the import scanning function that caused a crash on false positives.
 ### v7.0
 - This plugin now patches the core of npdrm to decrypt content if and only if the official method (rif + act.dat) fails
 - Now you can run official PSN games and DLC without needing to decrypt them.

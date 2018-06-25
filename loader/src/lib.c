@@ -60,12 +60,7 @@ u32 FindExport(const char *module, const char *library, u32 nid)
 
 	if (mod) {
 		u32 addr = mod->text_addr;
-		u32 maxaddr = 0x88400000;
-
-		if (addr >= 0x08800000 && addr < 0x0A000000)
-			maxaddr = 0x0A000000;
-		else if (addr >= 0x08400000 && addr < 0x08800000)
-			maxaddr = 0x08800000;
+		u32 maxaddr = addr + mod->text_size;
 
 		for (; addr < maxaddr; addr += 4) {
 			if (strcmp(library, (const char *)addr) == 0) {
