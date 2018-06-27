@@ -13,6 +13,8 @@ A PSP/ePSP plugin to run official NPDRM PS1/PSP content without need of a valid 
 ALL content MUST be encrypted and left as is from official .pkg for this plugin to work, otherwise use NoDRM engine in PRO CFW.
 
 ## Changelog
+### v7.2
+- Suspend/resume issue should be fixed, thanks to kyleatlast.
 ### v7.1
 - Fixed the import scanning function that caused a crash on false positives.
 ### v7.0
@@ -27,7 +29,7 @@ ALL content MUST be encrypted and left as is from official .pkg for this plugin 
 Huge thanks to all involved in the PSP/ePSP/PSVita homebrew community, devs and users alike,
 without whom I would not be able to accomplish this task. You are too numerous to name.
 
-Big thanks to kyleatleast who revived this project by finally fixing the suspend issue in ePSP.
+Big thanks to kyleatlast who revived this project by finally fixing the suspend issue in ePSP.
 
 ## Author's notes
 Contact me for issues if needed.

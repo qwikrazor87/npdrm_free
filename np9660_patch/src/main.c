@@ -31,10 +31,11 @@ PSP_HEAP_SIZE_KB(0);
 
 static STMOD_HANDLER previous = NULL;
 char ebootpath[256], g_pgd_path[256];
-u8 pgdbuf[0x90];
+u8 pgdbuf[0x90], g_eboot_key[16];
 SceModule2 *npmod;
-int licensed_eboot = 0;
+int licensed_eboot = 0, g_is_key = 0;
 int applicationType;
+#define FAKEFD 0x12345678
 
 u32 tou32(u8 *buf)
 {
@@ -51,6 +52,7 @@ int is_licensed_eboot(const char *path)
 	if (!memcmp(buf, "\x00PBP", 4)) {
 		sceIoLseek(fd, tou32(buf + 0x24), 0);
 		sceIoRead(fd, buf, 0xC);
+
 		if (!memcmp(buf, "NPUMDIMG", 8))
 			ret = memcmp(buf + 8, "\x03\x00\x00\x01", 4); //disable patch if fixed key version is detected.
 	}
@@ -78,7 +80,7 @@ SceUID userIoOpenAsync(const char *path, int flags, SceMode mode)
 
 //patches sceNpDrmEdataSetupKey and sceNpDrmGetModuleKey
 int (* setup_edat_version_key)(u8 *vkey, u8 *edat, int size);
-int setup_edat_version_key_hook(u8 *vkey, u8 *edat, int size)
+int setup_edat_version_key_hook(u8 *vkey, u8 *edat, int size) //variable EDAT/SPRX vkey per game, do not backup vkey.
 {
 	int ret = setup_edat_version_key(vkey, edat, size);
 
@@ -98,20 +100,34 @@ int setup_edat_version_key_hook(u8 *vkey, u8 *edat, int size)
 int (* setup_eboot_version_key)(u8 *vkey, u8 *cid, u32 type, u8 *act);
 int setup_eboot_version_key_hook(u8 *vkey, u8 *cid, u32 type, u8 *act)
 {
+	if (g_is_key) { //prevent SceNpUmdMount thread from crashing during suspend/resume process if rif/act.dat fails.
+		memcpy(vkey, g_eboot_key, 16); //copy generated key from first call since there is only one version key per eboot.
+		return 0;
+	}
+
 	int ret = setup_eboot_version_key(vkey, cid, type, act);
 
 	if (ret < 0) //generate key from mac if official method fails.
 		ret = get_version_key(vkey, ebootpath);
+
+	if (ret >= 0) {
+		memcpy(g_eboot_key, vkey, 16); //backup eboot vkey for later calls.
+		g_is_key = 1;
+	}
 
 	return ret;
 }
 
 void patch_drm()
 {
-	u32 addr;
+	u32 addr, data;
 
 	for (addr = npmod->text_addr; addr < (npmod->text_addr + npmod->text_size); addr += 4) {
-		if (_lw(addr) == 0x3C098055) { //lui        $t1, 0x8055
+		data = _lw(addr);
+
+		if (data == 0x3C118021) { //lui        $s1, 0x8021
+			_sw(0x1021, addr - 4); //move $v0, $zr //patch memcmp, ensures the kernel continues to decrypt the eboot.
+		} else if (data == 0x3C098055) { //lui        $t1, 0x8055
 			HIJACK_FUNCTION(addr - 4, setup_eboot_version_key_hook, setup_eboot_version_key);
 			break;
 		}
