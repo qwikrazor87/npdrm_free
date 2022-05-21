@@ -7,7 +7,8 @@ A PSP/ePSP plugin to run official NPDRM PS1/PSP content without need of a valid 
 - Place npdrm_free.prx at ms0:/seplugins/npdrm_free.prx.
 - Enable plugin in both ms0:/seplugins/game.txt and ms0:/seplugins/vsh.txt.
 - Write this line in both .txt files:
-	ms0:/seplugins/npdrm_free.prx 1
+  - PSP 1000/2000/3000/E1000 : `ms0:/seplugins/npdrm_free.prx 1`
+  - PSP N1000 (PSP Go) : `ef0:/seplugins/npdrm_free.prx 1`
 - Restart VSH, now you can run any official PSN content without a license.
 
 ALL content MUST be encrypted and left as is from official .pkg for this plugin to work, otherwise use NoDRM engine in PRO CFW.
